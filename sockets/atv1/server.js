@@ -1,21 +1,16 @@
 const net = require('net');
 const readLine = require("readline");
 
-const map = new Map();
-map.set('a', 1);
-
 const rl = readLine.createInterface({ input: process.stdin, output: process.stdout })
 
+blueCollor = '\u001b[34m';
+resetCollor = '\u001b[0m';
+
 const handdleConnection = socket => {
-    socket.write("Send your name...")
-    console.log('Esta conexão está na porta: ' + socket.remotePort); //Usar pra mapear quem é quem
 
     socket.on('data', (data) => {
         const str = data.toString();
-        if (str === 'end') {
-            socket.end();
-        }
-        console.log('client:' + str);
+        console.log(blueCollor + 'client:' + resetCollor + str);
     });
 
     rl.addListener('line', line => {
