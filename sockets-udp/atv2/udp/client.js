@@ -8,12 +8,12 @@ const rl = readLine.createInterface({ input: process.stdin, output: process.stdo
 const socket = dgram.createSocket('udp4');
 
 socket.on('message', (msg, rinfo) => {
-    console.log(`Recebi a mensagem: ${msg} do client ${rinfo.address}: ${rinfo.port}`);
+    console.log(msg.toString());
 })
 
 socket.on('listening', () => {
     const address = socket.address();
-    console.log(`server listening ${address.address}:${address.port}`);
+    console.log(`SERVIDOR ONLINE ${address.address}:${address.port}`);
 });
 
 socket.bind(4001);
