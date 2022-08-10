@@ -7,30 +7,79 @@ app.use(express.json());
 const localhostPrefix = "http://localhost:8080/";
 
 let dias = [
-    { "id": 1,
-    "name": "segunda",
-    "tarefas": [] },
-    { "id": 2,
-    "name": "terca",
-    "tarefas": [] },
-    { "id": 3,
-    "name": "quarta",
-    "tarefas": [] },
-    { "id": 4,
-    "name": "quinta",
-    "tarefas": [] },
-    { "id": 5,
-    "name": "sexta",
-    "tarefas": [] },
-    { "id": 6,
-    "name": "sabado",
-    "tarefas": [] },
-    { "id": 7,
-    "name": "domingo",
-    "tarefas": [] }
+    {
+        "id": 1,
+        "name": "segunda",
+        "tarefas": [],
+        "links": []
+    },
+    {
+        "id": 2,
+        "name": "terca",
+        "tarefas": [],
+        "links": []
+    },
+    {
+        "id": 3,
+        "name": "quarta",
+        "tarefas": [],
+        "links": []
+    },
+    {
+        "id": 4,
+        "name": "quinta",
+        "tarefas": [],
+        "links": []
+    },
+    {
+        "id": 5,
+        "name": "sexta",
+        "tarefas": [],
+        "links": []
+    },
+    {
+        "id": 6,
+        "name": "sabado",
+        "tarefas": [],
+        "links": []
+    },
+    {
+        "id": 7,
+        "name": "domingo",
+        "tarefas": [],
+        "links": []
+    }
 ]
 
+let link = {
+    "href": localhostPrefix,
+    "type": ""
+}
+
+buildLink = (pre, pos, id, rel, type, tarefaId) => {
+    let linkItem = Object.assign({}, link);
+
+    if (pos) {
+        linkItem.href = linkItem.href + pre + "/" + id + "/" + pos;
+    } else {
+        linkItem.href = linkItem.href + pre + "/" + id;
+    }
+
+    if (tarefaId) {
+        linkItem.href = linkItem.href + "/" + tarefaId
+    }
+    linkItem.rel = rel;
+    linkItem.type = type;
+    return linkItem;
+}
+
 app.get("/days", (req, res) => {
+    dias.forEach(d => {
+        if (d.links.length == 0) {
+            d.links.push(buildLink("days", null, d.id, "days", "GET"));
+            d.links.push(buildLink("days", null, d.id, "days", "GET", "tarefas"));
+        }
+    });
     res.status(200).json(dias);
 
 })
@@ -98,8 +147,33 @@ app.delete("/days/:id/tarefas/:tarefaId", (req, res) => {
     if (index > -1) {
         dia.tarefas.splice(index, 1)
     }
-    console.log(index);
-    
+
+    return res.status(200).json();
+
+})
+
+
+app.put("/days/:id/tarefas/:tarefaId", (req, res) => {
+    const { id, tarefaId } = req.params;
+
+    let dia = dias[id - 1];
+
+    let index = dia.tarefas.findIndex(t => t.id == tarefaId);
+    if (index > -1) {
+        try {
+            let { description } = req.body;
+            let tarefa = dia.tarefas[index];
+            tarefa.description = description;
+
+        } catch (error) {
+            return res.status(500).json({
+                "apiMessage": 'Objeto inválido',
+                "statusCode": 500,
+                "additionalMessage": {}
+            });
+        }
+    }
+
     return res.status(200).json();
 
 })
@@ -117,8 +191,14 @@ app.post("/days/:dayId/tarefas", (req, res) => {
     try {
         let { id, description } = req.body;
         let dayFilter = dias.filter(d => d.id == dayId);
-        let tarefa = { "id": id, "description": description }
-        
+        let tarefa = { "id": id, "description": description, "links": [] }
+
+        tarefa.links.push(buildLink("days", "tarefas", dayId, "tarefas", "GET"))
+        tarefa.links.push(buildLink("days", "tarefas", dayId, "tarefa", "GET", id))
+        tarefa.links.push(buildLink("days", "tarefas", dayId, "tarefa", "POST", id))
+        tarefa.links.push(buildLink("days", "tarefas", dayId, "tarefa", "PUT", id))
+        tarefa.links.push(buildLink("days", "tarefas", dayId, "tarefa", "DELETE", id))
+
         dayFilter[0].tarefas.push(tarefa)
         return res.status(201).json(tarefa);
     } catch (error) {
