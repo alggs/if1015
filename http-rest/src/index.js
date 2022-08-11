@@ -156,7 +156,7 @@ app.delete("/days/:id/tarefas/:tarefaId", (req, res) => {
 app.put("/days/:id/tarefas/:tarefaId", (req, res) => {
     const { id, tarefaId } = req.params;
 
-    let dia = dias[id - 1];
+    let dia = dias[parseInt(id) - 1];
 
     let index = dia.tarefas.findIndex(t => t.id == tarefaId);
     if (index > -1) {
