@@ -8,25 +8,29 @@ const instance = axios.create({
 });
 
 async function api(method, path, body) {
-  if (method == "GET") {
-    let response = await instance.get(path);
-    console.log(JSON.stringify(response.data))
-  }
-
-  if (method == "POST") {
-    let response = await instance.post(path, body);
-    console.log(JSON.stringify(response.data))
-  }
-
-  if (method == "PUT") {
-    let response = await instance.put(path, body);
-    console.log()
-    console.log(JSON.stringify(response.data))
-  }
-
-  if (method == "DELETE") {
-    let response = await instance.delete(path);
-    console.log(JSON.stringify(response.data))
+  try {
+    if (method == "GET") {
+      let response = await instance.get(path);
+      console.log(JSON.stringify(response.data))
+    }
+  
+    if (method == "POST") {
+      let response = await instance.post(path, body);
+      console.log(JSON.stringify(response.data))
+    }
+  
+    if (method == "PUT") {
+      let response = await instance.put(path, body);
+      console.log()
+      console.log(JSON.stringify(response.data))
+    }
+  
+    if (method == "DELETE") {
+      let response = await instance.delete(path);
+      console.log(JSON.stringify(response.data))
+    }
+  } catch (error) {
+    console.log("Algum valor não foi encontrado, a API retornou código fora da faixa 2xx. Está tentando burlar, ou achou um bug na minha api ?");
   }
 }
 
